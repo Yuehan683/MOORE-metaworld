@@ -284,7 +284,7 @@ class MetaworldSACMixtureMHActorNetwork(nn.Module):
             c = c.cuda()
         
         # task-weight computation
-        c_onehot = F.one_hot(c, num_classes = self._n_contexts)
+        c_onehot = F.one_hot(c.long(), num_classes = self._n_contexts)
         w = self._task_encoder(c_onehot.float()).unsqueeze(1)
 
         # shared features

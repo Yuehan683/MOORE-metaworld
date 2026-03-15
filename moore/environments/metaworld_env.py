@@ -1,8 +1,16 @@
 import metaworld
 import random
 
-from gym import spaces as gym_spaces
+# from gym import spaces as gym_spaces
 import numpy as np
+
+try:
+    import gymnasium as gym
+except ImportError:
+    import gym
+
+from gym import spaces as gym_spaces
+
 
 try:
     import pybullet_envs
@@ -108,16 +116,28 @@ class MetaWorldEnv(Environment):
         return self._training_envs
 
     @staticmethod
+    # def _convert_gym_space(space):
+    #     print(type(space))
+    #     if isinstance(space, gym_spaces.Discrete):
+    #         return Discrete(space.n)
+    #     elif isinstance(space, gym_spaces.Box):
+    #         return Box(low=space.low, high=space.high, shape=space.shape)
+    #     else:
+    #         raise ValueError
+    @staticmethod
     def _convert_gym_space(space):
-        if isinstance(space, gym_spaces.Discrete):
+        # Discrete
+        if isinstance(space, (gym_spaces.Discrete, gym.spaces.Discrete)):
             return Discrete(space.n)
-        elif isinstance(space, gym_spaces.Box):
-            return Box(low=space.low, high=space.high, shape=space.shape)
-        else:
-            raise ValueError
 
-        
-    
+        # Box
+        elif isinstance(space, (gym_spaces.Box, gym.spaces.Box)):
+            return Box(low=space.low, high=space.high, shape=space.shape)
+
+        else:
+            raise ValueError(f"Unsupported space type: {type(space)}")
+
+
 class MetaWorldTaskEnv(Environment):
     def __init__(self, env, 
                         env_name,
@@ -156,6 +176,8 @@ class MetaWorldTaskEnv(Environment):
         if state is None:
             # state, _ = self._env.reset()
             state = self._env.reset()
+            if isinstance(state, tuple):
+                state = state[0]
             return np.atleast_1d(state)
         else:
             self._env.reset()
@@ -164,7 +186,13 @@ class MetaWorldTaskEnv(Environment):
     
     def step(self, action):
         # action = self._convert_action(action)
-        obs, reward, absorbing, info = self._env.step(action)
+        out = self._env.step(action)
+        # gymnasium
+        if len(out) == 5:
+            obs, reward, terminated, truncated, info = out
+            absorbing = terminated or truncated
+        else:
+            obs, reward, absorbing, info = out
         return np.atleast_1d(obs), reward, absorbing, info
     
 
