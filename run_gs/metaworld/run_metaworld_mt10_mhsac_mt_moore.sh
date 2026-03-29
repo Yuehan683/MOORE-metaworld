@@ -7,12 +7,14 @@
 N_EXPERTS=$1
 SEED=$2
 
+cd ../..
+
 python3 run_metaworld_sac_mt.py \
   --seed "${SEED}" \
   --n_exp 1 \
   --exp_type MT10 \
-  --exp_name "mhsac_moore_400x3lx${N_EXPERTS}e" \
-  --results_dir logs/metaworld \
+  --exp_name "gs_mhsac_moore_400x3lx${N_EXPERTS}e" \
+  --results_dir logs \
   --batch_size 128 \
   --n_epochs 20 \
   --n_steps 100000 \
@@ -38,4 +40,5 @@ python3 run_metaworld_sac_mt.py \
   --n_episodes_test 10 \
   --train_frequency 1 \
   --sample_task_per_episode \
-  --rl_checkpoint_interval 3 
+  --rl_checkpoint_interval 3 \
+  --use_cuda

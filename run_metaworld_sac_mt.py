@@ -351,9 +351,13 @@ if __name__ == '__main__':
     if args.seed is not None:
         assert len(args.seed) == args.n_exp
 
-    alg_name = "mixture_orthogonal_experts" if args.orthogonal else "mixture_experts"
+    #alg_name = "mixture_orthogonal_experts" if args.orthogonal else "mixture_experts"
     # logging
-    results_dir = os.path.join(args.results_dir, args.exp_type, alg_name)
+    #results_dir = os.path.join(args.results_dir, args.exp_type, alg_name)
+
+    method_name = "gs"
+    alg_name = "moore" if args.orthogonal else "moe"
+    results_dir = os.path.join(args.results_dir, args.exp_type, method_name, alg_name)
 
     logger = Logger(args.exp_name, results_dir=results_dir, log_console=True, use_timestamp=args.use_timestamp)
     logger.strong_line()
